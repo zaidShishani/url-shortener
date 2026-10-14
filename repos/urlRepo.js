@@ -1,26 +1,40 @@
-import db from "../db/dbConfig";
+import db from "../db/dbConfig.js";
 
 
-export async function getUrlRepo(url) {
-    const sql = `
-        SELECT url from urls where shorten = ?;
-    `;
+export function getUrlRepo(shorten) {
+    const sql = db.prepare(`
+            SELECT url from urls where shorten = ?;
+        `).get(shorten);
+    const url = sql.run();
+    if (!url.ok) {
+        console.log('[ERROR] getUrl query failed: ', err);
+        throw new Error;
+    }
+    return url;
 }
 
-export async function insertUrlRepo(url, shorten, expirationDate) {
-    const sql = `
-        INSERT INTO urls(url, shorten, expirationDate) VALUES (?,?,?);
-    `
+export function insertUrlRepo(url, shorten, expirationDate) {
+    const sql = db.prepare(`
+            INSERT INTO urls(url, shorten, expirationDate) VALUES (?,?,?);
+        `).run(url, shorten, expirationDate);
+    const insert = sql.run();
+    if (!insert) {
+        console.log('[ERROR] insertUurl query failed: ', err);
+        throw new Error
+    };
+    return insert;
 }
 
-export async function updateUrlRepo(url, shorten, expirationDate) {
-    const sql = `
+export function deleteUrlRepo(id) {
+    const sql = db.prepare(`
+            DELETE FROM url WHERE id = ?;
+    `).get(id);
 
-    `
+
 }
 
-export async function deleteUrlRepo(id) {
-    const sql = `
-        DELETE FROM url WHERE id = ?;
-    `
+export function updateUrlRepo(url, shorten, expirationDate) {
+    const sql = db.prepare(`
+    
+        `);
 }
