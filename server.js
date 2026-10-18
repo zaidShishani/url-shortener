@@ -11,7 +11,7 @@ const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 app.use(express.json());
 app.use(logger('dev'));
 
-app.use('/url', route);
+app.use('/urls', route);
 
 app.use(express.static(path.join(DIRNAME, "public")));
 

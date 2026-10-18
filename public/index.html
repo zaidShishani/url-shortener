@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLTL</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>TLTL</h1>
+        <p>Too Long To Link<br/>shorten, manage and share your URLs.</p>
+    </header>
+
+    <main>
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <input type="text" id="search-input" placeholder="Enter short code and press Enter">
+                <span id="search-error" class="error-text"></span>
+            </div>
+            <div class="toolbar-right">
+                <button id="delete-btn" disabled><i class="bi bi-trash"></i> Delete</button>
+                <button id="add-btn"><i class="bi bi-plus-lg"></i> Add URL</button>
+            </div>
+        </div>
+
+        <div id="table-container"></div>
+    </main>
+
+    <dialog id="add-dialog">
+        <form id="add-form">
+            <h3>Add new URL</h3>
+            <label>URL<input type="url" name="url" required></label>
+            <label>Custom short code (optional)<input type="text" name="custom"></label>
+            <label>Expiration date (optional)<input type="date" name="experationData"></label>
+            <div class="dialog-actions">
+                <button type="button" id="add-cancel-btn">Cancel</button>
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="delete-dialog">
+        <p id="delete-message"></p>
+        <div class="dialog-actions">
+            <button type="button" id="delete-cancel-btn">Cancel</button>
+            <button type="button" id="delete-confirm-btn">Delete</button>
+        </div>
+    </dialog>
+
+    <footer>
+        <p>&copy; 2026 TLTL</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
