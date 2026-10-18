@@ -7,7 +7,7 @@ const DIRNAME = path.dirname(fileURLToPath(import.meta.url))
 const DBDIR = path.join(DIRNAME, "../DB_Store");
 const MIGRATIONS_DIR = path.join(DIRNAME, 'migration');
 
-const db = new Database(path.join(DBDIR,"url-shortener"));
+const db = new Database(process.env.DB_PATH ?? path.join(DBDIR, "url-shortener"));
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON')
 

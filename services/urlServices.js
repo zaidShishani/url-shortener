@@ -19,7 +19,7 @@ export function getUrlService(shorten) {
 export function insertUrlService(fields) {
     const { url, custom, experationData } = fields;
     if (custom && urlRepo.getUrlRepo(custom)) {
-        return { status: 409, message: "short code already taken." };
+        return { status: 409, message: "short url already taken." };
     }
     const shorten = custom ?? generateShortUrl();
     urlRepo.insertUrlRepo(url, shorten, experationData);
@@ -31,5 +31,5 @@ export function updateUrlService(id, fields) {
     const cols = update.filter(f => fields[f] !== undefined);
     if (!cols.length) return { status: 400, message: "url not changed"};
     const change = urlRepo.updateUrlRepo(id, cols, fields);
-    return change ? { status: 204 } : { status: 404, message: "url not found" };
+    return change.changes > 0 ? { status: 204 } : { status: 404, message: "url not found" };
 }

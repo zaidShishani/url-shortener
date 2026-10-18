@@ -9,7 +9,7 @@ export function getAllUrlsRepo() {
 
 export function getUrlRepo(shorten) {
     const sql = db.prepare(`
-            SELECT url from urls where shorten = ? AND expirationDate < CURRENT_TIMESTAMP;
+            SELECT url from urls where shorten = ? AND (expirationDate IS NULL OR expirationDate > CURRENT_TIMESTAMP);
         `).get(shorten);
     return sql;
 }
@@ -31,7 +31,7 @@ export function deleteUrlRepo(id) {
 
 export function updateUrlRepo(id, cols, fields) {
     const sql = db.prepare(`
-            UPDATE urls(${cols.map(c =>`${c} = ?`).join(',')} , updateAT) VALUES (?,?,?, CURRENT_TIMESTAMP) where id = ?;
-        `).run(...cols.map(f => fields[f], id));
+            UPDATE urls SET ${cols.map(c =>`${c} = ?`).join(',')}, updateAT = CURRENT_TIMESTAMP where id = ?;
+        `).run(...cols.map(f => fields[f]), id);
     return sql;
 }
