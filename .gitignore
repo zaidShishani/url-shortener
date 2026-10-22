@@ -10,3 +10,5 @@ node_modules/
 *.log
 npm-debug.log*
 DB_Store
+
+dist/

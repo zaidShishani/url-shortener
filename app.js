@@ -10,8 +10,11 @@ const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 app.use(express.json());
 app.use(logger('dev'));
 
-app.use('/urls', route);
+app.use('/api/urls', route);
 
-app.use(express.static(path.join(DIRNAME, "public")));
+app.use(express.static(path.join(DIRNAME, "dist")));
+app.get(/^(?!\/api).*/, (req, res) => {
+    res.sendFile(path.join(DIRNAME, "dist", "index.html"));
+});
 
 export default app;

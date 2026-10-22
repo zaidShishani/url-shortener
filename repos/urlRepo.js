@@ -11,6 +11,7 @@ export function getUrlRepo(shorten) {
     const sql = db.prepare(`
             SELECT url from urls where shorten = ? AND (expirationDate IS NULL OR expirationDate > CURRENT_TIMESTAMP);
         `).get(shorten);
+        console.log("sql", sql)
     return sql;
 }
 
