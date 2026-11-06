@@ -6,7 +6,7 @@ export function getAllUlsController() {
 }
 
 export function getUrlController(shorten) {
-    return urlRepo.getUrlRepo(shorten);
+    return urlService.getUrlService(shorten);
 }
 
 export function insertShortUrlController(fields) {

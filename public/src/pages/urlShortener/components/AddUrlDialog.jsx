@@ -23,7 +23,7 @@ export default function AddUrlDialog({ open, onClose, onSubmit }) {
                 <h3>Add new URL</h3>
                 <label>URL<input type="url" name="url" required /></label>
                 <label>Custom short code (optional)<input type="text" name="custom" /></label>
-                <label>Expiration date (optional)<input type="date" name="experationData" /></label>
+                <label>Expiration date (optional)<input type="date" name="expirationDate" /></label>
                 <div className="dialog-actions">
                     <button type="button" onClick={onClose}>Cancel</button>
                     <button type="submit">Save</button>

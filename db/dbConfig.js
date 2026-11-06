@@ -1,35 +1,43 @@
-import Database from "better-sqlite3";
+import { Pool } from "pg";
 import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url))
-const DBDIR = path.join(DIRNAME, "../DB_Store");
 const MIGRATIONS_DIR = path.join(DIRNAME, 'migration');
+const BOOTSTRAP = "000_config.sql";
 
-const db = new Database(process.env.DB_PATH ?? path.join(DBDIR, "url-shortener"));
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON')
+export const pool = new Pool({ 
+    options: "-c search_path=url_shortener_db" 
+});
 
-function migrate() {
-    const current = db.pragma('user_version', {simple: true})
-    const files = fs.readdirSync(MIGRATIONS_DIR).sort();
+pool.on("error", (err) => console.error("[Database] idle client error:", err.message));
 
-    for(const file of files) {
-        const version = parseInt(file,10)
-        if(version <= current) continue; 
+export async function migrate() {
+    await pool.query(fs.readFileSync(path.join(MIGRATIONS_DIR, BOOTSTRAP), "utf-8"));
+
+    const { rows } = await pool.query("SELECT filename FROM url_shortener_db.schema_migrations");
+    const applied = new Set(rows.map(r => r.filename));
+    const files = fs.readdirSync(MIGRATIONS_DIR)
+        .filter(f => f.endsWith(".sql") && f !== BOOTSTRAP)
+        .sort();
+
+    for (const file of files) {
+        if (applied.has(file)) continue;
 
         const sql = fs.readFileSync(path.join(MIGRATIONS_DIR, file), "utf-8");
-        db.transaction(() => {
-            db.exec(sql);
-            db.pragma(`user_version = ${version}`);
-        })();
+        const conn = await pool.connect();
+        try {
+            await conn.query("BEGIN");
+            await conn.query(sql);
+            await conn.query("INSERT INTO url_shortener_db.schema_migrations (filename) VALUES ($1)", [file]);
+            await conn.query("COMMIT");
+            console.log(`[Database] applied ${file}`);
+        } catch (err) {
+            await conn.query("ROLLBACK");
+            throw err;
+        } finally {
+            conn.release();
+        }
     }
 }
-
-migrate();
-
-process.on('exit', () => db.close());
-console.log("[Database] connected successfully");
-
-export default db;

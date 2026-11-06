@@ -1,15 +1,5 @@
 import * as z from "zod";
 
-//validator middlare
-export const validateRequest = (schema, source = "body") => (req, res, next) => {
-    const result = schema.safeParse(req[source]);
-    if (!result.success) {
-        return res.status(400).json({ error: result.error });
-    }
-    next()
-}
-
-//inputs validations
 export const idValidation = z.object({
     id: z.coerce.number().int().positive()
 })
@@ -28,6 +18,6 @@ export const bodyPatchValidation = z.object({
 
 export const bodyPostValidation = z.object({
     url: z.url(),
-    shorten: z.string().max(25).optional(),
+    custom: z.string().max(25).optional(),
     expirationDate: z.iso.date().optional()
 })

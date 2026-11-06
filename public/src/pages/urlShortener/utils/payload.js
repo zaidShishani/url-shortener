@@ -1,6 +1,5 @@
-const OPTIONAL_FIELDS = ["custom", "experationData"];
+const OPTIONAL_FIELDS = ["custom", "expirationDate"];
 
-// the api rejects empty strings, so optional fields are dropped unless filled in
 export function buildUrlPayload(formData) {
     const payload = { url: formData.get("url") };
     for (const field of OPTIONAL_FIELDS) {

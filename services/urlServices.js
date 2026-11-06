@@ -1,4 +1,5 @@
 import * as urlRepo from "../repos/urlRepo.js";
+import AppError from "../libs/errorhandler.js";
 import { randomBytes } from "crypto";
 
 function generateShortUrl() {
@@ -11,25 +12,34 @@ function generateShortUrl() {
     return result;
 }
 
-export function getUrlService(shorten) {
-    const data = urlRepo.getUrlRepo(shorten);
-    if(!data) return ({ status: 404, message: "url not found" })
+export async function getUrlService(shorten) {
+    const row = await urlRepo.getUrlRepo(shorten);
+    if (!row) throw new AppError(404, "url not found");
+    return row.url;
 }
 
-export function insertUrlService(fields) {
-    const { url, custom, experationData } = fields;
-    if (custom && urlRepo.getUrlRepo(custom)) {
-        return { status: 409, message: "short url already taken." };
-    }
+export async function insertUrlService(fields) {
+    const { url, custom, expirationDate } = fields;
     const shorten = custom ?? generateShortUrl();
-    urlRepo.insertUrlRepo(url, shorten, experationData);
-    return { status: 201, data: shorten };
+    try {
+        await urlRepo.insertUrlRepo(url, shorten, expirationDate);
+    } catch (err) {
+        throw err.code === "23505" ? new AppError(409, "short url already taken.") : err;;
+    }
+    return shorten;
 }
 
-export function updateUrlService(id, fields) {
+export async function updateUrlService(id, fields) {
     const update = ["url", "shorten", "expirationDate"];
     const cols = update.filter(f => fields[f] !== undefined);
-    if (!cols.length) return { status: 400, message: "url not changed"};
-    const change = urlRepo.updateUrlRepo(id, cols, fields);
-    return change.changes > 0 ? { status: 204 } : { status: 404, message: "url not found" };
+    if (!cols.length) throw new AppError(400, "url not changed");
+    let changed;
+    try {
+        changed = await urlRepo.updateUrlRepo(id, cols, fields);
+    } catch (err) {
+        throw err.code === "23505" ? new AppError(409, "short url already taken.") : err;;
+    }
+    if (!changed) throw new AppError(404, "url not found");
+    
 }
+
