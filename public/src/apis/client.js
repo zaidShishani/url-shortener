@@ -1,10 +1,26 @@
-export async function request(path, options) {
-    const res = await fetch(path, options);
-    if (!res.ok) throw new Error(`request failed with status ${res.status}`);
-    return res;
-}
+import axios from "axios";
 
-export const jsonBody = (body) => ({
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+const TOKEN_KEY = "token";
+
+export const getToken = () => localStorage.getItem(TOKEN_KEY);
+export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
+export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
+
+export const api = axios.create();
+
+api.interceptors.request.use((config) => {
+    const token = getToken();
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
 });
+
+api.interceptors.response.use(
+    (res) => res,
+    (err) => {
+        if ([401, 403].includes(err.response?.status) && getToken()) {
+            clearToken();
+            window.location.replace("/404");
+        }
+        return Promise.reject(err);
+    },
+);

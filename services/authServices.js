@@ -22,7 +22,10 @@ export async function insertUserService({ username, password }) {
 
 export async function loginUserService({ username, password }) {
     const user = await authRepo.getUserRepo(username);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    console.log("user")
+    const check = bcrypt.compare(password, user.password)
+    if (!user || !check) {
+        console.log("am i here ? ")
         throw new AppError(401, "invalid username or password");
     }
     return tokenGen(user.id);

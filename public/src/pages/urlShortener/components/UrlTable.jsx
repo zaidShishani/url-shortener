@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { shortUrlHref } from "../apis/urlsApi.js";
 
 const FIELDS = ["url", "shorten"];
+const HREF = { url: row => row.url, shorten: row => shortUrlHref(row.shorten) };
 
 export default function UrlTable({ rows, selectedIds, onToggleSelected, onSave }) {
     const [editing, setEditing] = useState(null);
@@ -40,7 +42,7 @@ export default function UrlTable({ rows, selectedIds, onToggleSelected, onSave }
                                             value={editing[field]}
                                             onChange={e => setEditing({ ...editing, [field]: e.target.value })}
                                           />
-                                        : row[field]}
+                                        : <a href={HREF[field](row)} target="_blank" rel="noopener noreferrer" className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">{row[field]}</a>}
                                 </td>
                             ))}
                             <td>
